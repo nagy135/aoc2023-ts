@@ -2,12 +2,24 @@ import { argv } from "process";
 
 async function main() {
   import(`./${argv[2]}/index.ts`).then(async (e) => {
-    let input = "input.txt";
+    let input = "input";
     if (argv[3] === "test") {
-      input = "test.txt";
+      input = "test";
     }
-    const file = Bun.file(`${argv[2]}/${input}`);
-    const text = await file.text();
+    let part = "";
+    if (argv[4] === "2") {
+      part = "_2";
+    }
+    let text = "";
+    try {
+      const file = Bun.file(`${argv[2]}/${input}${part}.txt`);
+      text = await file.text();
+    } catch (error) {
+      console.log("defaulting to:");
+      console.log(`${argv[2]}/${input}.txt`);
+      const file = Bun.file(`${argv[2]}/${input}.txt`);
+      text = await file.text();
+    }
     const lines = text.split("\n");
     if (lines.at(-1) === "") {
       lines.pop();
